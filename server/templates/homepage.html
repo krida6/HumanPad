@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block title %}HumanPad - Homepage{% endblock %}
+
+
+{% block body %}
+
+<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column col-md-8">
+    <header class="masthead mb-auto">
+        <nav class="nav nav-masthead justify-content-center">
+            <a class="nav-link active" href="/">Home</a>
+            <a class="nav-link" href="/gamepad">Gamepad</a>
+            <a class="nav-link" href="/settings">Settings</a>
+        </nav>
+    </header>
+
+    <main role="main" class="cover text-center">
+        <img src="/static/images/humanpadico.png" alt="HumanPad"  style="width:200px;">
+        <h1>HumanPad</h1>
+    </main>
+
+    <footer class="mt-auto text-right">
+        Created by <a href="https>//butab.cz" title="Author of the app">BUTAB.cz</a>
+    </footer>
+</div>
+
+
+{% endblock %}
+
+{% block script %}
+{% endblock %}

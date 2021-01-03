@@ -14,36 +14,26 @@
     </header>
 
     <main role="main" class="cover text-center">
-        <a id="start_demo" class="btn btn-lg btn-success py-1" href="#" role="button">Start</a><br><br>
-        <strong style="margin-top:0.75rem;">Orientation</strong>
-        <ul style="list-style:none; font-size:0.8em;">
-        <li>X-axis (&beta;): <span id="Orientation_b">0</span><span>&deg;</span></li>
-        <li>Y-axis (&gamma;): <span id="Orientation_g">0</span><span>&deg;</span></li>
-        <li>Z-axis (&alpha;): <span id="Orientation_a">0</span><span>&deg;</span></li>
-        </ul>
-
-        <strong>Accelerometer</strong>
-        <ul style="list-style:none; font-size:0.8em;">
-        <li>X-axis: <span id="Accelerometer_x">0</span><span> m/s<sup>2</sup></span></li>
-        <li>Y-axis: <span id="Accelerometer_y">0</span><span> m/s<sup>2</sup></span></li>
-        <li>Z-axis: <span id="Accelerometer_z">0</span><span> m/s<sup>2</sup></span></li>
-        <li>Data Interval: <span id="Accelerometer_i">0</span><span> ms</span></li>
-        </ul>
-
-        <strong>Accelerometer including gravity</strong>
-
-        <ul style="list-style:none; font-size:0.8em;">
-        <li>X-axis: <span id="Accelerometer_gx">0</span><span> m/s<sup>2</sup></span></li>
-        <li>Y-axis: <span id="Accelerometer_gy">0</span><span> m/s<sup>2</sup></span></li>
-        <li>Z-axis: <span id="Accelerometer_gz">0</span><span> m/s<sup>2</sup></span></li>
-        </ul>
-
-        <strong>Gyroscope</strong>
-        <ul style="list-style:none; font-size:0.8em;">
-        <li>X-axis: <span id="Gyroscope_x">0</span><span>&deg;/s</span></li>
-        <li>Y-axis: <span id="Gyroscope_y">0</span><span>&deg;/s</span></li>
-        <li>Z-axis: <span id="Gyroscope_z">0</span><span>&deg;/s</span></li>
-        </ul>
+        X: <span id="xtext">0</span> Y: <span id="ytext">0</span>
+        
+        <i class="bi bi-app" id="button-cross-middle"></i>
+        <div class="button-cross" id="button-cross" style="margin:auto;">
+            <div style="margin-top:-5px;">
+                <i class="bi bi-arrow-up-left-square"></i>
+                <i class="bi bi-arrow-up-square"></i>
+                <i class="bi bi-arrow-up-right-square"></i>
+            </div>
+            <div style="margin-top:-8px;">
+                <i class="bi bi-arrow-left-square"></i>
+                <i class="bi bi-app"></i>
+                <i class="bi bi-arrow-right-square"></i>
+            </div>
+            <div style="margin-top:-8px;">
+                <i class="bi bi-arrow-down-left-square"></i>
+                <i class="bi bi-arrow-down-square"></i>
+                <i class="bi bi-arrow-down-right-square"></i>
+            </div>
+        </div>
     </main>
 
     <footer class="mt-auto text-right">
@@ -56,60 +46,65 @@
 
 {% block script %}
 <script>
-    function updateFieldIfNotNull(fieldName, value, precision=2){
-    if (value != null)
-        document.getElementById(fieldName).innerHTML = value.toFixed(precision);
-    }
+    var buttonCross = document.getElementById("button-cross");
+    var buttonCrossMiddle = document.getElementById('button-cross-middle');
+    var rectCross = buttonCross.getBoundingClientRect();
+    var wCross = 25;
+    var hCross = 40;
 
-    function handleOrientation(event) {
-        updateFieldIfNotNull('Orientation_a', event.alpha);
-        updateFieldIfNotNull('Orientation_b', event.beta);
-        updateFieldIfNotNull('Orientation_g', event.gamma);
-    }
+    buttonCrossMiddle.style.left = (rectCross.left + rectCross.width/2 - wCross) + "px";
+    buttonCrossMiddle.style.top = (rectCross.top + rectCross.height/2 - hCross) + "px";
 
-    function handleMotion(event) {
-        updateFieldIfNotNull('Accelerometer_gx', event.accelerationIncludingGravity.x);
-        updateFieldIfNotNull('Accelerometer_gy', event.accelerationIncludingGravity.y);
-        updateFieldIfNotNull('Accelerometer_gz', event.accelerationIncludingGravity.z);
-
-        updateFieldIfNotNull('Accelerometer_x', event.acceleration.x);
-        updateFieldIfNotNull('Accelerometer_y', event.acceleration.y);
-        updateFieldIfNotNull('Accelerometer_z', event.acceleration.z);
-
-        updateFieldIfNotNull('Accelerometer_i', event.interval, 2);
-
-        updateFieldIfNotNull('Gyroscope_z', event.rotationRate.alpha);
-        updateFieldIfNotNull('Gyroscope_x', event.rotationRate.beta);
-        updateFieldIfNotNull('Gyroscope_y', event.rotationRate.gamma);
-    }
-
-    let is_running = false;
-    let demo_button = document.getElementById("start_demo");
-    
-    demo_button.onclick = function(e) {
+    function doTouch(e) {
         e.preventDefault();
-        
-        // Request permission for iOS 13+ devices
-        if (DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === "function") {
-            DeviceMotionEvent.requestPermission();
-        }
-        
-        if (is_running){
-            window.removeEventListener("devicemotion", handleMotion);
-            window.removeEventListener("deviceorientation", handleOrientation);
-            demo_button.innerHTML = "Start";
-            demo_button.classList.add('btn-success');
-            demo_button.classList.remove('btn-danger');
-            is_running = false;
-        }else{
-            window.addEventListener("devicemotion", handleMotion);
-            window.addEventListener("deviceorientation", handleOrientation);
-            document.getElementById("start_demo").innerHTML = "Stop";
-            demo_button.classList.remove('btn-success');
-            demo_button.classList.add('btn-danger');
-            is_running = true;
-        }
+        var touch = e.touches[0];
+        var rect = buttonCross.getBoundingClientRect();
 
+        buttonCrossMiddle.style.left = (Math.min(rect.left + rect.width, Math.max(rect.left, touch.pageX))-wCross) + "px";
+        buttonCrossMiddle.style.top = (Math.min(rect.top + rect.height, Math.max(rect.top, touch.pageY)) - hCross) + "px";
+        
+        document.getElementById("xtext").innerHTML = (touch.pageX - rect.width/2 - rect.left);
+        document.getElementById("ytext").innerHTML = (touch.pageY - rect.height/2 - rect.top);        
+    }
+
+    function endTouch(e) {
+        e.preventDefault();
+
+        rectCross = buttonCross.getBoundingClientRect();
+        
+        buttonCrossMiddle.style.left = (rectCross.left + rectCross.width/2 - wCross) + "px";
+        buttonCrossMiddle.style.top = (rectCross.top + rectCross.height/2 - hCross) + "px";
+        
+        document.getElementById("xtext").innerHTML = 0;
+        document.getElementById("ytext").innerHTML = 0;        
+    }
+
+    buttonCross.addEventListener('touchstart', function(e) {doTouch(e);}, false);
+    buttonCross.addEventListener('touchmove', function(e) {doTouch(e);}, false);
+    buttonCross.addEventListener("touchend", function(e) {endTouch(e);}, false);
+
+
+
+    // If the orienation is change, we need to recalculate parameters
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    var previousOrientation = window.orientation;
+    var checkOrientation = async function(){
+        if(window.orientation !== previousOrientation){
+            previousOrientation = window.orientation;
+            // orientation changed, do your magic here
+
+            await sleep(100); // we need some time to refresh page and update values
+            rectCross = buttonCross.getBoundingClientRect();
+        
+            buttonCrossMiddle.style.left = (rectCross.left + rectCross.width/2 - wCross) + "px";
+            buttonCrossMiddle.style.top = (rectCross.top + rectCross.height/2 - hCross) + "px";
+        }
     };
+
+    window.addEventListener("resize", checkOrientation, false);
+    window.addEventListener("orientationchange", checkOrientation, false);
 </script>
 {% endblock %}
